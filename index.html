@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA Musee</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  overflow: hidden;
+  background: #0f1a24;
+}
+
+/* 背景（換成你的圖） */
+#aura-space {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+
+  background: url('./auramusee.png') center/cover no-repeat;
+  filter: brightness(0.85);
+}
+
+/* UI層 */
+#ui {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 35%;
+  background: linear-gradient(to top, rgba(15,26,36,0.95), rgba(15,26,36,0));
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+/* 衣服 */
+.item {
+  width: 70px;
+  height: 70px;
+  background: #ccc;
+  border-radius: 10px;
+  cursor: grab;
+}
+
+/* Look名稱 */
+#look-name {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-size: 16px;
+  opacity: 0.8;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="aura-space"></div>
+
+<div id="look-name">AURA Look_001</div>
+
+<div id="ui">
+  <div class="item" draggable="true"></div>
+  <div class="item" draggable="true"></div>
+  <div class="item" draggable="true"></div>
+</div>
+
+<script>
+let count = 1;
+
+document.querySelectorAll('.item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    const clone = item.cloneNode(true);
+    clone.style.position = "absolute";
+    clone.style.left = "100px";
+    clone.style.top = "100px";
+    document.body.appendChild(clone);
+
+    clone.onmousedown = function(e) {
+      let shiftX = e.clientX - clone.getBoundingClientRect().left;
+      let shiftY = e.clientY - clone.getBoundingClientRect().top;
+
+      function moveAt(pageX, pageY) {
+        clone.style.left = pageX - shiftX + 'px';
+        clone.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(e) {
+        moveAt(e.pageX, e.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      clone.onmouseup = function() {
+        document.removeEventListener('mousemove', onMouseMove);
+        clone.onmouseup = null;
+      };
+    };
+
+    clone.ondragstart = () => false;
+
+    // 自動命名
+    count++;
+    document.getElementById("look-name").innerText =
+      "AURA Look_" + String(count).padStart(3, '0');
+  });
+});
+</script>
+
+</body>
+</html>
